@@ -1,25 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap');
+
 :root {
-    --bg-dark: #0f172a;
-    --card-bg: rgba(30, 41, 59, 0.7);
-    --accent: #6366f1;
-    --republican: #ef4444;
-    --democrat: #3b82f6;
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --border: rgba(148, 163, 184, 0.2);
-    --glass-bg: rgba(15, 23, 42, 0.6);
-    --glass-blur: blur(12px);
+    --bg: #060b14;
+    --surface: rgba(10, 18, 35, 0.92);
+    --surface2: rgba(14, 24, 48, 0.85);
+    --accent: #5b6cf9;
+    --accent-glow: rgba(91, 108, 249, 0.35);
+    --republican: #e8302b;
+    --republican-light: #ff6b68;
+    --democrat: #1a6eff;
+    --democrat-light: #5ba3ff;
+    --text-primary: #f0f4ff;
+    --text-secondary: #7a8fb5;
+    --border: rgba(120, 150, 220, 0.15);
+    --border-bright: rgba(120, 150, 220, 0.35);
+    --glow-red: rgba(232, 48, 43, 0.5);
+    --glow-blue: rgba(26, 110, 255, 0.5);
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: var(--bg-dark);
+    background-color: var(--bg);
+    background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(26, 60, 140, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 30%, rgba(91, 108, 249, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, #070d1a 0%, #060b14 100%);
     color: var(--text-primary);
     height: 100vh;
     overflow: hidden;
@@ -29,143 +36,12 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    padding: 1rem;
-    max-width: 1600px;
-    margin: 0 auto;
+    padding: 0;
     overflow: hidden;
 }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1.5rem;
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    border-radius: 1rem;
-    border: 1px solid var(--border);
-    margin-bottom: 1rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-.logo {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-}
-
-.logo span {
-    color: var(--accent);
-}
-
-.breadcrumbs {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-}
-
-.breadcrumb-item {
-    cursor: pointer;
-    transition: color 0.2s;
-}
-
-.breadcrumb-item:hover {
-    color: var(--text-primary);
-}
-
-.breadcrumb-item.active {
-    color: var(--accent);
-    font-weight: 600;
-    pointer-events: none;
-}
-
-.breadcrumb-item:not(:last-child)::after {
-    content: "/";
-    margin-left: 0.5rem;
-    color: var(--border);
-}
-
-.hidden {
-    display: none;
-}
-
-.controls {
-    display: flex;
-    align-items: center;
-}
-
-.color-palette {
-    display: flex;
-    gap: 0.75rem;
-}
-
-.color-btn {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid transparent;
-    cursor: pointer;
-    transition: transform 0.2s, border-color 0.2s;
-}
-
-.color-btn:hover {
-    transform: scale(1.2);
-}
-
-.color-btn.active {
-    border-color: var(--text-primary);
-    transform: scale(1.2);
-}
-
-.action-buttons {
-    display: flex;
-    gap: 0.75rem;
-    margin-left: 1.5rem;
-    padding-left: 1.5rem;
-    border-left: 1px solid var(--border);
-}
-
-.action-btn {
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: 1px solid transparent;
-    font-family: 'Inter', sans-serif;
-}
-
-.action-btn.primary {
-    background: var(--accent);
-    color: white;
-}
-
-.action-btn.primary:hover {
-    background: #4f46e5;
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
-    transform: translateY(-1px);
-}
-
-.action-btn.secondary {
-    background: transparent;
-    border-color: var(--border);
-    color: var(--text-primary);
-}
-
-.action-btn.secondary:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: var(--text-secondary);
-}
-
+/* ─── MAP CONTAINER ─── */
 .map-container {
-    background: var(--card-bg);
-    backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--border);
-    border-radius: 1rem;
     flex: 1;
     min-height: 0;
     position: relative;
@@ -174,13 +50,12 @@ header {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.2);
+    background:
+        radial-gradient(ellipse at center, rgba(10, 20, 50, 0.6) 0%, transparent 70%);
     cursor: grab;
 }
 
-.map-container:active {
-    cursor: grabbing;
-}
+.map-container:active { cursor: grabbing; }
 
 #magic-wall-svg {
     width: 100%;
@@ -189,20 +64,37 @@ header {
     cursor: inherit;
 }
 
+/* ─── STATE PATHS ─── */
 .state-path {
-    fill: rgba(75, 85, 99, 0.4);
-    stroke: var(--bg-dark);
-    stroke-width: 1;
+    fill: rgba(30, 42, 75, 0.6);
+    stroke: rgba(80, 110, 180, 0.4);
+    stroke-width: 0.4;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: filter 0.25s ease, stroke 0.25s ease;
 }
 
 .state-path:hover {
-    stroke: var(--text-primary);
-    stroke-width: 2;
-    filter: brightness(1.2);
+    stroke: rgba(160, 190, 255, 0.9);
+    stroke-width: 1;
+    filter: brightness(1.25) drop-shadow(0 0 8px rgba(120, 160, 255, 0.4));
 }
 
+/* ─── COUNTY PATHS ─── */
+.county-path {
+    fill: rgba(25, 38, 70, 0.4);
+    stroke: rgba(50, 75, 130, 0.4);
+    stroke-width: 0.4;
+    cursor: default;
+    transition: filter 0.2s ease, stroke 0.2s ease;
+}
+
+.county-path:hover {
+    stroke: rgba(200, 220, 255, 0.8);
+    stroke-width: 1;
+    filter: brightness(1.3);
+}
+
+/* ─── STATE LABELS ─── */
 .state-label {
     pointer-events: none;
     text-anchor: middle;
@@ -211,50 +103,203 @@ header {
 }
 
 .state-name {
-    font-size: 10px;
-    fill: rgba(255, 255, 255, 0.6);
+    font-size: 9px;
+    fill: rgba(200, 215, 255, 0.55);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
 }
 
 .state-percent {
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 800;
     fill: white;
-    text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+    filter: drop-shadow(0 1px 4px rgba(0,0,0,0.9));
 }
 
-.county-path {
-    fill: rgba(75, 85, 99, 0.3);
-    stroke: rgba(255, 255, 255, 0.1);
-    stroke-width: 0.5;
+/* ─── BREADCRUMB NAV ─── */
+.breadcrumbs {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--text-secondary);
+}
+
+.breadcrumb-item {
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: color 0.2s;
 }
 
-.county-path:hover {
-    fill: rgba(99, 102, 241, 0.3);
-    stroke: var(--accent);
-    stroke-width: 1.5;
+.breadcrumb-item:hover { color: var(--text-primary); }
+
+.breadcrumb-item.active {
+    color: #a5b8ff;
+    pointer-events: none;
 }
 
+.breadcrumb-item:not(:last-child)::after {
+    content: "›";
+    margin-left: 0.5rem;
+    color: var(--border-bright);
+}
+
+.hidden { display: none !important; }
+
+/* ─── TOOLTIP ─── */
 .tooltip {
     position: absolute;
-    background: rgba(15, 23, 42, 0.95);
-    border: 1px solid var(--accent);
+    background: rgba(6, 11, 22, 0.97);
+    border: 1px solid var(--border-bright);
     padding: 0.6rem 1rem;
     border-radius: 0.5rem;
     pointer-events: none;
-    font-size: 0.85rem;
-    line-height: 1.4;
     z-index: 100;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(100, 130, 220, 0.1);
     color: white;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    line-height: 1.5;
 }
 
+/* ─── BOTTOM SCORE BAR ─── */
+.bottom-bar-container {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 38%;
+    min-width: 400px;
+    background: rgba(6, 11, 22, 0.92);
+    backdrop-filter: blur(20px);
+    padding: 0.75rem 1.25rem 0.9rem;
+    border-radius: 1rem;
+    border: 1px solid var(--border-bright);
+    box-shadow:
+        0 0 0 1px rgba(80, 110, 200, 0.1),
+        0 20px 50px rgba(0, 0, 0, 0.7),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.bottom-bar-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-dem, .stat-rep {
+    display: flex;
+    flex-direction: column;
+    min-width: 70px;
+}
+
+.stat-rep { align-items: flex-end; }
+
+.stat-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 0.1rem;
+}
+
+.stat-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+}
+
+.stat-dem .stat-value {
+    color: var(--democrat-light);
+    text-shadow: 0 0 20px var(--glow-blue);
+}
+
+.stat-rep .stat-value {
+    color: var(--republican-light);
+    text-shadow: 0 0 20px var(--glow-red);
+}
+
+.stat-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 0 0.5rem;
+}
+
+.stat-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+/* ─── PROGRESS BAR ─── */
+.progress-bar-wrap {
+    width: 100%;
+    height: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 5px;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 1px 4px rgba(0,0,0,0.6);
+    border: 1px solid rgba(80, 110, 180, 0.15);
+}
+
+.progress-fill {
+    height: 100%;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-fill.dem {
+    background: linear-gradient(90deg, #0d3fa0, var(--democrat));
+    box-shadow: 2px 0 8px var(--glow-blue);
+}
+
+.progress-fill.rep {
+    background: linear-gradient(270deg, #7f1d1d, var(--republican));
+    box-shadow: -2px 0 8px var(--glow-red);
+    margin-left: auto;
+}
+
+.progress-center-line {
+    position: absolute;
+    left: 50%;
+    top: -2px;
+    bottom: -2px;
+    width: 2px;
+    background: rgba(255,255,255,0.6);
+    z-index: 2;
+    box-shadow: 0 0 6px rgba(255,255,255,0.5);
+}
+
+/* ─── FOOTER ─── */
+.app-info {
+    display: none;
+}
+
+/* ─── RESULTS OVERLAY ─── */
 .results-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(8px);
+    background: rgba(6, 11, 22, 0.85);
+    backdrop-filter: blur(12px);
     z-index: 200;
     display: flex;
     justify-content: center;
@@ -263,13 +308,13 @@ header {
 }
 
 .results-content {
-    background: var(--bg-dark);
-    border: 1px solid var(--border);
+    background: var(--surface);
+    border: 1px solid var(--border-bright);
     border-radius: 1.5rem;
     padding: 2rem;
-    max-width: 400px;
+    max-width: 420px;
     width: 100%;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -279,12 +324,7 @@ header {
     font-family: 'Outfit', sans-serif;
     font-size: 1.5rem;
     color: var(--accent);
-}
-
-#results-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    font-weight: 700;
 }
 
 .result-row {
@@ -297,173 +337,23 @@ header {
 }
 
 .result-color {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
 }
 
 .result-count {
-    font-weight: 700;
-    font-size: 1.1rem;
-}
-
-.app-info {
-    margin-top: 1rem;
-    display: flex;
-    justify-content: space-between;
-    padding: 0.5rem 0;
-    border-top: 1px solid var(--border);
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-}
-
-.stats {
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
-}
-
-.bottom-bar-container {
-    position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60%;
-    min-width: 600px;
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    padding: 1.5rem 2rem;
-    border-radius: 1.25rem;
-    border: 1px solid var(--border);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.bottom-bar-stats {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.stat-dem, .stat-rep {
-    display: flex;
-    flex-direction: column;
-}
-
-.stat-rep {
-    align-items: flex-end;
-}
-
-.stat-label {
     font-family: 'Outfit', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    color: var(--text-secondary);
-    margin-bottom: 0.25rem;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-}
-
-.stat-value {
-    font-family: 'Outfit', sans-serif;
-    font-size: 3.5rem;
+    font-size: 1.3rem;
     font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1;
-    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
 }
 
-.stat-dem .stat-value {
-    color: var(--democrat);
-}
-
-.stat-rep .stat-value {
-    color: var(--republican);
-}
-
-.stat-center {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.stat-title {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1.1rem;
-    color: var(--text-primary);
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    opacity: 0.8;
-}
-
-.progress-bar-wrap {
-    width: 100%;
-    height: 24px;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 12px;
-    display: flex;
-    position: relative;
-    overflow: hidden;
-    box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
-    border: 1px solid rgba(255,255,255,0.05);
-}
-
-.progress-fill {
-    height: 100%;
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.progress-fill.dem {
-    background: linear-gradient(90deg, #1e3a8a, var(--democrat));
-    border-right: 2px solid rgba(255,255,255,0.2);
-}
-
-.progress-fill.rep {
-    background: linear-gradient(270deg, #7f1d1d, var(--republican));
-    border-left: 2px solid rgba(255,255,255,0.2);
-    margin-left: auto;
-}
-
-.progress-center-line {
-    position: absolute;
-    left: 50%;
-    top: -5px;
-    bottom: -5px;
-    width: 2px;
-    background: rgba(255,255,255,0.5);
-    z-index: 2;
-    box-shadow: 0 0 10px rgba(255,255,255,0.5);
-}
-
-.hidden {
-    display: none;
-}
-
-/* Animations */
+/* ─── ANIMATIONS ─── */
 .fade-in {
     opacity: 0;
-    animation: fadeIn 0.8s ease forwards;
+    animation: fadeIn 0.5s ease forwards;
 }
 
 @keyframes fadeIn {
-    to {
-        opacity: 1;
-    }
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .app-container {
-        padding: 1rem;
-    }
-
-    header {
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1.5rem;
-    }
+    to { opacity: 1; }
 }

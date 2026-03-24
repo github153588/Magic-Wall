@@ -2,13 +2,20 @@
 let currentLevel = 'states'; // states, counties
 let currentPath = { state: null };
 let activeColor = '#6366f1';
-const filledColors = new Map(); // Key: geo id, Value: color
+let currentYear = '2024';
+let viewMode = 'all'; // 'all' or 'data'
+const filledColors = new Map(); // Key: geo id, Value: color info object
 
 const breadcrumbs = document.getElementById('breadcrumbs');
 const bcCounty = document.getElementById('bc-county');
 const viewLabel = document.getElementById('current-view-label');
 const itemCount = document.getElementById('item-count');
 const colorPalette = document.getElementById('color-palette');
+const year2020Btn = document.getElementById('year-2020');
+const year2024Btn = document.getElementById('year-2024');
+const viewAllBtn = document.getElementById('view-all');
+const viewDataBtn = document.getElementById('view-data');
+const viewToggleEl = document.getElementById('view-toggle');
 const tooltip = document.getElementById('tooltip');
 const mapContainer = document.getElementById('map-container');
 const resultsOverlay = document.getElementById('results-overlay');
@@ -43,6 +50,19 @@ const showTooltip = (event, text, additionalInfo = '') => {
 };
 const hideTooltip = () => tooltip.classList.add('hidden');
 
+function getShadedColor(baseColor, percentage) {
+    if (!percentage) return baseColor;
+    // Scale percentages: 50% maps to ~0.3 (lightest shading) up to 85%+ mapping to 1 (full saturation)
+    const scale = d3.scaleLinear().domain([45, 85]).range([0.2, 1]).clamp(true);
+    const t = scale(percentage);
+    if (baseColor === '#ef4444') {
+        return d3.interpolateReds(t);
+    } else if (baseColor === '#3b82f6') {
+        return d3.interpolateBlues(t);
+    }
+    return baseColor;
+}
+
 let usData = null;
 
 // Initialize
@@ -64,11 +84,6 @@ async function init() {
         setupEventListeners();
         window.addEventListener('resize', handleResize);
         
-        // Automatically load Minnesota Data to visually see if we loaded it, but stay on US Map view
-        if (hasData) {
-            calculateResults();
-        }
-        
     } catch (error) {
         console.error("Error loading map data:", error);
         viewLabel.innerText = "Error loading map data. Please check connection.";
@@ -82,29 +97,61 @@ function handleResize() {
 }
 
 function setupEventListeners() {
-    colorPalette.addEventListener('click', (e) => {
-        if (e.target.classList.contains('color-btn')) {
-            document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
-            e.target.classList.add('active');
-            activeColor = e.target.dataset.color;
-        }
-    });
-
     breadcrumbs.addEventListener('click', (e) => {
         const item = e.target.closest('.breadcrumb-item');
         if (!item) return;
         if (item.dataset.level === 'states') navigateToStates();
     });
 
-    calculateBtn.addEventListener('click', calculateResults);
-    resetBtn.addEventListener('click', resetMap);
-    closeResultsBtn.addEventListener('click', () => resultsOverlay.classList.add('hidden'));
+    if (year2020Btn && year2024Btn) {
+        year2020Btn.addEventListener('click', () => {
+            currentYear = '2020';
+            year2020Btn.style.background = 'var(--accent)';
+            year2020Btn.style.color = 'white';
+            year2024Btn.style.background = 'transparent';
+            year2024Btn.style.color = 'var(--text-secondary)';
+            updateViewForYear();
+        });
+        
+        year2024Btn.addEventListener('click', () => {
+            currentYear = '2024';
+            year2024Btn.style.background = 'var(--accent)';
+            year2024Btn.style.color = 'white';
+            year2020Btn.style.background = 'transparent';
+            year2020Btn.style.color = 'var(--text-secondary)';
+            updateViewForYear();
+        });
+    }
+
+    if (viewAllBtn && viewDataBtn) {
+        viewAllBtn.addEventListener('click', () => {
+            viewMode = 'all';
+            viewAllBtn.style.background = 'var(--accent)';
+            viewAllBtn.style.color = 'white';
+            viewAllBtn.style.boxShadow = '0 2px 8px rgba(99, 102, 241, 0.4)';
+            viewDataBtn.style.background = 'transparent';
+            viewDataBtn.style.color = 'var(--text-secondary)';
+            viewDataBtn.style.boxShadow = 'none';
+            if (currentLevel === 'states') renderStates();
+        });
+        viewDataBtn.addEventListener('click', () => {
+            viewMode = 'data';
+            viewDataBtn.style.background = 'var(--accent)';
+            viewDataBtn.style.color = 'white';
+            viewDataBtn.style.boxShadow = '0 2px 8px rgba(99, 102, 241, 0.4)';
+            viewAllBtn.style.background = 'transparent';
+            viewAllBtn.style.color = 'var(--text-secondary)';
+            viewAllBtn.style.boxShadow = 'none';
+            if (currentLevel === 'states') renderStates();
+        });
+    }
 }
 
 function renderStates() {
     currentLevel = 'states';
     currentPath.state = null;
     g.selectAll("*").remove();
+    if (viewToggleEl) viewToggleEl.style.display = 'flex';
 
     const states = topojson.feature(usData, usData.objects.states).features;
     const allCountiesCount = topojson.feature(usData, usData.objects.counties).features;
@@ -117,7 +164,10 @@ function renderStates() {
     itemCount.innerText = "50 States";
 
     const stateGroups = g.selectAll(".state-group")
-        .data(states)
+        .data(viewMode === 'data'
+            ? states.filter(d => getStateStats(d.id, allCountiesCount).totalColored > 0)
+            : states
+        )
         .enter()
         .append("g")
         .attr("class", "state-group");
@@ -127,12 +177,21 @@ function renderStates() {
         .attr("d", path)
         .style("fill", d => {
             const stats = getStateStats(d.id, allCountiesCount);
-            if (stats.totalColored === 0) return 'rgba(75, 85, 99, 0.4)';
+            if (stats.totalColored === 0) return 'rgba(30, 42, 75, 0.6)';
             return stats.majorityColor;
         })
         .style("fill-opacity", d => {
             const stats = getStateStats(d.id, allCountiesCount);
-            return stats.totalColored === 0 ? 0.4 : 0.8;
+            return stats.totalColored === 0 ? 1 : 0.88;
+        })
+        .style("stroke", d => {
+            const stats = getStateStats(d.id, allCountiesCount);
+            if (stats.totalColored === 0) return 'rgba(80, 110, 180, 0.5)';
+            return stats.majorityColor === '#ef4444' ? 'rgba(255,120,120,0.6)' : 'rgba(100,160,255,0.6)';
+        })
+        .style("stroke-width", d => {
+            const stats = getStateStats(d.id, allCountiesCount);
+            return stats.totalColored === 0 ? 0.4 : 0.6;
         })
         .on("mouseover", (event, d) => {
             const stats = getStateStats(d.id, allCountiesCount);
@@ -182,9 +241,16 @@ function getStateStats(stateId, allCounties) {
 
     stateCounties.forEach(c => {
         const data = filledColors.get(`county-${c.id}`);
-        const color = typeof data === 'object' ? data.color : data;
-        if (color === '#ef4444') red++;
-        if (color === '#3b82f6') blue++;
+        if (data) {
+            let color;
+            if (typeof data === 'object') {
+                color = currentYear === '2020' && data.color2020 ? data.color2020 : data.color;
+            } else {
+                color = data;
+            }
+            if (color === '#ef4444') red++;
+            if (color === '#3b82f6') blue++;
+        }
     });
 
     const totalColored = red + blue;
@@ -206,6 +272,7 @@ function renderCounties(stateFeature) {
     currentLevel = 'counties';
     currentPath.state = stateFeature;
     g.selectAll("*").remove();
+    if (viewToggleEl) viewToggleEl.style.display = 'none';
 
     const stateId = stateFeature.id;
     const allCounties = topojson.feature(usData, usData.objects.counties).features;
@@ -226,38 +293,43 @@ function renderCounties(stateFeature) {
         .attr("d", path)
         .style("fill", d => {
             const data = filledColors.get(`county-${d.id}`);
-            return (typeof data === 'object' ? data.color : data) || null;
+            if (!data) return null;
+            if (typeof data === 'object') {
+                const baseColor = currentYear === '2020' && data.color2020 ? data.color2020 : data.color;
+                const pct = currentYear === '2020' && data.percentage2020 ? data.percentage2020 : data.percentage;
+                return getShadedColor(baseColor, pct);
+            }
+            return data;
         })
         .on("mouseover", (event, d) => {
             const data = filledColors.get(`county-${d.id}`);
-            const info = (data && data.percentage) ? `${data.percentage}%` : '';
+            let info = '';
+            if (data) {
+                if (currentYear === '2020' && data.percentage2020) {
+                    info = `2020: ${data.percentage2020}%`;
+                } else if (currentYear === '2024' && data.percentage) {
+                    info = `2024: ${data.percentage}%`;
+                } else if (data.percentage) {
+                    info = `${data.percentage}%`;
+                }
+                
+                // Show both if available on hover
+                if (data.percentage && data.percentage2020) {
+                    info = `2024: ${data.percentage}%<br>2020: ${data.percentage2020}%`;
+                }
+            }
             showTooltip(event, d.properties.name, info);
         })
         .on("mouseout", hideTooltip)
         .on("click", (event, d) => {
-            if (event.defaultPrevented) return;
-            fillShape(d3.select(event.target), `county-${d.id}`);
+            // read-only: no manual fill
         });
 
     zoomToFeature(stateFeature);
 }
 
 function fillShape(selection, id) {
-    if (activeColor === 'none') {
-        selection.style("fill", null);
-        filledColors.delete(id);
-    } else {
-        const percentage = prompt("Enter percentage for this county (0-100):", "");
-        const pctValue = percentage !== null && percentage !== "" ? parseFloat(percentage) : null;
-
-        selection.style("fill", activeColor);
-        filledColors.set(id, { color: activeColor, percentage: pctValue });
-
-        // Show immediate feedback in tooltip
-        const name = selection.datum().properties.name;
-        showTooltip(d3.event || { pageX: 0, pageY: 0 }, name, pctValue ? `${pctValue}%` : '');
-    }
-    saveState();
+    // Manual fill disabled — data is set via preloadData only
 }
 
 function saveState() {
@@ -281,7 +353,12 @@ function updateLiveCounter() {
     
     filledColors.forEach((data, id) => {
         if (!id.startsWith('county-')) return;
-        const color = typeof data === 'object' ? data.color : data;
+        let color;
+        if (typeof data === 'object') {
+            color = currentYear === '2020' && data.color2020 ? data.color2020 : data.color;
+        } else {
+            color = data;
+        }
         if (color === '#ef4444') repCount++;
         if (color === '#3b82f6') demCount++;
     });
@@ -322,7 +399,13 @@ function calculateResults() {
 
     // Count counties
     filledColors.forEach((data, id) => {
-        const color = typeof data === 'object' ? data.color : data;
+        let color;
+        if (typeof data === 'object') {
+            color = currentYear === '2020' && data.color2020 ? data.color2020 : data.color;
+        } else {
+            color = data;
+        }
+        
         if (id.startsWith('county-') && (color === '#ef4444' || color === '#3b82f6')) {
             counts[color]++;
         }
@@ -368,6 +451,15 @@ function navigateToCounties(d) {
     document.querySelector('[data-level="states"]').classList.remove('active');
     bcCounty.classList.add('active');
     renderCounties(d);
+}
+
+function updateViewForYear() {
+    updateLiveCounter();
+    if (currentLevel === 'states') {
+        renderStates();
+    } else if (currentPath.state) {
+        renderCounties(currentPath.state);
+    }
 }
 
 function zoomToFeature(feature) {
